@@ -2,8 +2,8 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHept
 local Window = Library.CreateLib("Pobo Hack Client", "Ocean")
 
 -- Glowne
-local Main = Window:NewTab("Cheaty1")
-local Section = Main:NewSection("Cheaty Główne")
+local Main = Window:NewTab("Movement")
+local Section = Main:NewSection("Cheaty Movementowe")
 
 Section:NewButton("Szybkie chodzenie", "Szybko chodzisz", function()
     game.Players.PlayerAdded:Connect(function(player)
@@ -14,79 +14,11 @@ Section:NewButton("Szybkie chodzenie", "Szybko chodzisz", function()
     end)
 end)
 
-Section:NewButton("Latanie", "Latasz", function()
+Section:NewButton("Wysokie Skakanie", "Masz skok wysoki", function()
     local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
 
-local flying = false
-local speed = 50
 
-local bodyVelocity
-local bodyGyro
-
--- Sterowanie
-local UIS = game:GetService("UserInputService")
-local direction = Vector3.new()
-
--- Start/Stop latania
-function toggleFly()
-	flying = not flying
-	
-	if flying then
-		bodyVelocity = Instance.new("BodyVelocity")
-		bodyVelocity.Velocity = Vector3.new(0,0,0)
-		bodyVelocity.MaxForce = Vector3.new(1,1,1) * 1000000
-		bodyVelocity.Parent = humanoidRootPart
-		
-		bodyGyro = Instance.new("BodyGyro")
-		bodyGyro.CFrame = humanoidRootPart.CFrame
-		bodyGyro.MaxTorque = Vector3.new(1,1,1) * 1000000
-		bodyGyro.Parent = humanoidRootPart
-	else
-		if bodyVelocity then bodyVelocity:Destroy() end
-		if bodyGyro then bodyGyro:Destroy() end
-	end
-end
-
--- Sterowanie klawiszami
-UIS.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	
-	if input.KeyCode == Enum.KeyCode.F then
-		toggleFly()
-	end
-	
-	if input.KeyCode == Enum.KeyCode.W then
-		direction = direction + Vector3.new(0,0,-1)
-	elseif input.KeyCode == Enum.KeyCode.S then
-		direction = direction + Vector3.new(0,0,1)
-	elseif input.KeyCode == Enum.KeyCode.A then
-		direction = direction + Vector3.new(-1,0,0)
-	elseif input.KeyCode == Enum.KeyCode.D then
-		direction = direction + Vector3.new(1,0,0)
-	end
+humanoid.JumpPower = 100
 end)
-
-UIS.InputEnded:Connect(function(input)
-	if input.KeyCode == Enum.KeyCode.W then
-		direction = direction - Vector3.new(0,0,-1)
-	elseif input.KeyCode == Enum.KeyCode.S then
-		direction = direction - Vector3.new(0,0,1)
-	elseif input.KeyCode == Enum.KeyCode.A then
-		direction = direction - Vector3.new(-1,0,0)
-	elseif input.KeyCode == Enum.KeyCode.D then
-		direction = direction - Vector3.new(1,0,0)
-	end
-end)
-
--- Ruch
-game:GetService("RunService").RenderStepped:Connect(function()
-	if flying and bodyVelocity then
-		local camera = workspace.CurrentCamera
-		local moveDirection = camera.CFrame:VectorToWorldSpace(direction)
-		bodyVelocity.Velocity = moveDirection * speed
-		bodyGyro.CFrame = camera.CFrame
-	end
-end)
-    
